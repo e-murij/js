@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 2</title>
+</head>
+<body>
+<script>
+    // var goodsCount = 0;
+
+    // if (goodsCount > 0) {
+    //     console.log('Количество товара в корзине ' + goodsCount);
+    // } else {
+    //     console.log('Корзина пуста.');
+    // }
+    // if (goodsCount > 0) console.log('Количество товара в корзине ' + goodsCount);
+    // else console.log('Корзина пуста.');
+
+    // goodsCount > 0
+    //     ? console.log('Количество товара в корзине ' + goodsCount) // true
+    //     : console.log('Корзина пуста.'); // false
+
+    // var cartInfoString = goodsCount > 0
+    //     ? 'Количество товара в корзине ' + goodsCount
+    //     : 'Корзина пуста.';
+    //
+    // console.log(cartInfoString);
+
+    // let good = 'Яблоки';
+
+    // if (good === 'Бананы') {
+    //     console.log('Стоимость бананов 50р.');
+    // } else {
+    //     if (good === 'Манго') {
+    //         console.log('Стоимость манго 80р.');
+    //     } else {
+    //         if (good === 'Яблоки' || good === 'Груши') {
+    //             console.log('Стоимость яблок и груш 40р.');
+    //         } else {
+    //             console.log('Неизвестный фрукт');
+    //         }
+    //     }
+    // }
+
+    // if (good === 'Бананы') {
+    //     console.log('Стоимость бананов 50р.');
+    // } else if (good === 'Манго') {
+    //     console.log('Стоимость манго 80р.');
+    // } else if (good === 'Яблоки' || good === 'Груши') {
+    //     console.log('Стоимость яблок и груш 40р.');
+    // } else {
+    //     console.log('Неизвестный фрукт');
+    // }
+
+    // switch (good) {
+    //     case "Бананы":
+    //         console.log('Стоимость бананов 50р.');
+    //         break;
+    //     case "Манго":
+    //         console.log('Стоимость манго 80р.');
+    //         break;
+    //     case "Яблоки":
+    //     case "Груши":
+    //         console.log('Стоимость яблок и груш 40р.');
+    //         break;
+    //     default:
+    //         console.log('Неизвестный фрукт');
+    // }
+    let good = 'Яблоки';
+    //
+    // function sayPrice(good) {
+    //     switch (good) {
+    //         case "Бананы":
+    //             console.log('Стоимость бананов 50р.');
+    //             break;
+    //         case "Манго":
+    //             console.log('Стоимость манго 80р.');
+    //             break;
+    //         case "Яблоки":
+    //         case "Груши":
+    //             console.log('Стоимость яблок и груш 40р.');
+    //             break;
+    //         default:
+    //             console.log('Неизвестный фрукт');
+    //     }
+    // }
+    // function getPrice(good) {
+    //     // let result = null;
+    //     switch (good) {
+    //         // case "Бананы": result = 50; break;
+    //         // case "Манго": result = 80; break;
+    //         // case "Яблоки":
+    //         // case "Груши": result = 40; break;
+    //
+    //         case "Бананы": return 50;
+    //         case "Манго": return 80;
+    //         case "Яблоки":
+    //         case "Груши": return 40;
+    //         default: return null;
+    //     }
+    //     // return result;
+    // }
+
+    // console.log(sayPrice('Манго'));
+    // console.log(sayPrice(good));
+    // console.log(getPrice('Манго') + getPrice(good));
+
+    // function getPriceByCount(good, count = 1) {
+    //     const price = getPrice(good);
+    //
+    //     if (price == null) return null;
+    //
+    //     return price * count;
+    // }
+    //
+    // console.log(getPriceByCount(good, 13));
+    // console.log(getPriceByCount(good));
+
+    // myFunc();
+    // function myFunc() {
+    //     console.log('FD');
+    // }
+    // var myFoo;
+    // myFunc();
+    // function myFunc() {
+    //     console.log('FD');
+    // }
+    //
+    // myFunc();
+    // myFunc();
+    // myFoo();
+    // var myFoo = myFunc;
+    // var myFoo = function () {
+    //     console.log('FE');
+    // };
+    // myFoo = myFunc;
+
+    // myFoo();
+
+    // function recursion(x) {
+    //     if (x <= 0 || !Number.isInteger(x)) return 'Задайте целое число больше 0';
+    //     if (x === 1) return '1';
+    //     return recursion(x - 1) + ' ' + x;
+    // }
+    //
+    // console.log(recursion(10));
+
+    let number;
+    let attempts;
+
+    function resetGame() {
+        attempts = 0;
+        number = Math.floor(Math.random() * 100);
+        console.log(number);
+    }
+
+    function tryGuessNumber() {
+        const userAnswer = parseInt(prompt('Введите число от 0 до 100, для выхода наберите -1'));
+
+        if (userAnswer === -1) return alert('Game Over');
+
+        if (isNaN(userAnswer)) {
+            alert('Необходимо ввести целое число от 0 до 100');
+            tryGuessNumber();
+            return;
+        }
+
+        attempts++;
+
+        if (userAnswer > number) {
+            alert('Попробуйте число меньше.');
+        } else if (userAnswer < number) {
+            alert('Попробуйте число больше.');
+        } else {
+            alert('Поздравляем! Вы угадали число! Кличество попыток: ' + attempts);
+
+            if (!confirm('Хотите сыграть еще?')) {
+                alert('Game Over');
+                return;
+            }
+
+            resetGame();
+        }
+
+        tryGuessNumber();
+    }
+
+    resetGame();
+    tryGuessNumber();
+</script>
+</body>
+</html>
