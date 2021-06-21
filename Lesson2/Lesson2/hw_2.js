@@ -138,10 +138,12 @@ function mathOperation(arg1, arg2, operation) {
 
 function power(val, pow) {
     if (pow === 0) return 1;
-    return val * power(val, pow - 1)
+    else if (pow < 0) return (1 / val) * power(val, pow + 1);
+    else return val * power(val, pow - 1);
 }
 
-// console.log(power(4, 1))
-// console.log(power(4, 0))
-// console.log(power(2, 5))
-
+console.log(power(4, 1))
+console.log(power(4, 0))
+console.log(power(2, 5))
+console.log(power(2, -1))
+console.log(power(16, -2))
