@@ -7,8 +7,8 @@ function simpleUpTo100() {
     let n = 2;
     while (n < 100) {
         let t = 2, isSimple = true;
-        while (t <= n) {
-            if (n % t === 0 && t !== n) {
+        while (t <= Math.sqrt(n)) {
+            if (n % t === 0) {
                 isSimple = false;
                 break;
             };
@@ -63,10 +63,10 @@ function countBasketPrice(basket) {
     xxxxx
 */
 
-let str = 'x';
-console.log(str);
-for (let x = 1; x < 20; x++) {
-    console.log(str += 'x');
-};
+// let str = 'x';
+// console.log(str);
+// for (let x = 1; x < 20; x++) {
+//     console.log(str += 'x');
+// };
 
 
