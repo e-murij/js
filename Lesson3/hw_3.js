@@ -36,15 +36,21 @@ const basket = [
     ['товар_4', 300, 10],
 ]; // [название, цена,количество]
 
+// function countBasketPrice(basket) {
+//     let basketPrice = 0;
+//     for (const value of basket) {
+//         basketPrice += value[1] * value[2];
+//     };
+//     return basketPrice;
+// }
+
 function countBasketPrice(basket) {
-    let basketPrice = 0;
-    for (const value of basket) {
-        basketPrice += value[1] * value[2];
-    };
-    return basketPrice;
+    return basket.reduce((totalPrice, cartItem) => totalPrice + cartItem[1] * cartItem[2], 0);
 }
 
-// console.log(countBasketPrice(basket))
+
+
+console.log(countBasketPrice(basket))
 
 /*
     4.*Вывести с помощью цикла for числа от 0 до 9, не используя тело цикла. Выглядеть это должно так:
