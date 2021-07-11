@@ -208,3 +208,4 @@
 
 // console.log(sum(a)(b)...(n)()); // => a + b + ... + n
 // console.log(sum(a)(b)...(n)); // => a + b + ... + n
+//#
