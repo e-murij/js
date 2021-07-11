@@ -38,6 +38,18 @@ td.cell{
 .snakeHead{
     background: #9b0013;
 }
+
+.barrier{
+    background: black;
+}
+
+#score{
+    text-align: center;
+    color: green;
+    font-size: 2em;
+    margin-top: 20px;
+}
+
 .disabled {
     background: #7c7c7c;
 }

@@ -85,7 +85,7 @@ const map = {
     }
   },
 
-  render(snakePointsArray, foodPoint) {
+  render(snakePointsArray, foodPoint, barrierPoints) {
     for (const cell of this.usedCells) {
       cell.className = 'cell';
     }
@@ -101,6 +101,13 @@ const map = {
     const foodCell = this.cells[`x${foodPoint.x}_y${foodPoint.y}`];
     foodCell.classList.add('food');
     this.usedCells.push(foodCell);
+
+
+    barrierPoints.forEach((point, index) => {
+      const barrierCell = this.cells[`x${point.x}_y${point.y}`];
+      barrierCell.classList.add('barrier');
+      this.usedCells.push(barrierCell);
+    });
   },
 };
 
@@ -108,11 +115,15 @@ const snake = {
   body: [],
   direction: null,
   lastStepDirection: null,
+  maxX: null,
+  maxY: null,
 
-  init(startBody, direction) {
+  init(startBody, direction, maxX, maxY) {
     this.body = startBody;
     this.direction = direction;
     this.lastStepDirection = direction;
+    this.maxX = maxX;
+    this.maxY = maxY;
   },
 
   getBody() {
@@ -151,15 +162,15 @@ const snake = {
   getNextStepHeadPoint() {
     const firstPoint = this.getBody()[0];
 
-    switch(this.direction) {
+    switch (this.direction) {
       case 'up':
-        return {x: firstPoint.x, y: firstPoint.y - 1};
+        return { x: firstPoint.x, y: firstPoint.y !== 0 ? firstPoint.y - 1 : this.maxY };
       case 'right':
-        return {x: firstPoint.x + 1, y: firstPoint.y};
+        return { x: firstPoint.x !== this.maxX ? firstPoint.x + 1 : 0, y: firstPoint.y };
       case 'down':
-        return {x: firstPoint.x, y: firstPoint.y + 1};
+        return { x: firstPoint.x, y: firstPoint.y !== this.maxY ? firstPoint.y + 1 : 0 };
       case 'left':
-        return {x: firstPoint.x - 1, y: firstPoint.y};
+        return { x: firstPoint.x !== 0 ? firstPoint.x - 1 : this.maxX, y: firstPoint.y };
     }
   },
 };
@@ -182,6 +193,28 @@ const food = {
 
   isOnPoint(point) {
     return this.x === point.x && this.y === point.y;
+  },
+};
+
+const barrier = {
+  points: [],
+
+  getCoordinates() {
+    return this.points
+  },
+
+  setCoordinates(point) {
+    this.points.unshift(point);
+  },
+
+  drop() {
+    this.points = [];
+  },
+
+  isOnPoint(point) {
+    return this.getCoordinates().some((barrierPoint) => {
+      return barrierPoint.x === point.x && barrierPoint.y === point.y;
+    });
   },
 };
 
@@ -209,12 +242,38 @@ const status = {
   },
 };
 
+const score = {
+  count: null,
+  scoreElement: null,
+
+  init() {
+    this.scoreElement = document.getElementById('score');
+    this.drop();
+  },
+
+  increase() {
+    this.count++;
+    this.render();
+  },
+
+  drop() {
+    this.count = 0;
+    this.render();
+  },
+
+  render() {
+    this.scoreElement.textContent = this.count;
+  }
+};
+
 const game = {
   config,
   map,
   snake,
   food,
   status,
+  score,
+  barrier,
   tickInterval: null,
 
   init(userSettings = {}) {
@@ -229,14 +288,17 @@ const game = {
     }
 
     this.map.init(this.config.getRowsCount(), this.config.getColsCount());
+    this.score.init();
     this.initEventHandlers();
     this.reset();
   },
 
   reset() {
     this.stop();
-    this.snake.init(this.getStartSnakeBody(), 'up');
+    this.score.drop();
+    this.snake.init(this.getStartSnakeBody(), 'up', this.config.getColsCount() - 1, this.config.getRowsCount() - 1);
     this.food.setCoordinates(this.getRandomFreeCoordinates());
+    this.barrier.drop();
     this.render();
   },
 
@@ -250,7 +312,7 @@ const game = {
   },
 
   getRandomFreeCoordinates() {
-    const exclude = [this.food.getCoordinates(), ...this.snake.getBody()];
+    const exclude = [this.food.getCoordinates(), ...this.snake.getBody(), ...this.barrier.getCoordinates()];
 
     while (true) {
       const rndPoint = {
@@ -285,21 +347,27 @@ const game = {
     playButton.textContent = text;
 
     isDisabled
-        ? playButton.classList.add('disabled')
-        : playButton.classList.remove('disabled');
+      ? playButton.classList.add('disabled')
+      : playButton.classList.remove('disabled');
   },
 
   tickHandler() {
     if (!this.canMakeStep()) return this.finish();
     if (this.isOnFood()) {
       this.snake.growUp();
+      this.score.increase();
       this.food.setCoordinates(this.getRandomFreeCoordinates());
-
+      this.makeBarrier();
       if (this.isGameWon()) this.finish();
+
     }
 
     this.snake.makeStep();
     this.render();
+  },
+
+  makeBarrier() {
+    if (this.score.count % 2 == 0) this.barrier.setCoordinates(this.getRandomFreeCoordinates());
   },
 
   isOnFood() {
@@ -308,11 +376,8 @@ const game = {
 
   canMakeStep() {
     const nextHeadPoint = this.snake.getNextStepHeadPoint();
-    return !this.snake.isOnPoint(nextHeadPoint) &&
-        nextHeadPoint.x < this.config.getColsCount() &&
-        nextHeadPoint.y < this.config.getRowsCount() &&
-        nextHeadPoint.x >= 0 &&
-        nextHeadPoint.y >= 0;
+    return !this.snake.isOnPoint(nextHeadPoint)
+      && !this.barrier.isOnPoint(nextHeadPoint);
   },
 
   isGameWon() {
@@ -369,15 +434,15 @@ const game = {
     const lastStepDirection = this.snake.getLastStepDirection();
 
     return direction === 'up' && lastStepDirection !== 'down' ||
-        direction === 'right' && lastStepDirection !== 'left' ||
-        direction === 'down' && lastStepDirection !== 'up' ||
-        direction === 'left' && lastStepDirection !== 'right';
+      direction === 'right' && lastStepDirection !== 'left' ||
+      direction === 'down' && lastStepDirection !== 'up' ||
+      direction === 'left' && lastStepDirection !== 'right';
   },
 
   render() {
-    this.map.render(this.snake.getBody(), this.food.getCoordinates());
+    this.map.render(this.snake.getBody(), this.food.getCoordinates(), this.barrier.getCoordinates());
   },
 
 };
 
-game.init({speed: 5});
+game.init({ speed: 5 });
